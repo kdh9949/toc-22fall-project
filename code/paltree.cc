@@ -18,14 +18,8 @@ struct Node {
     inSL = 0;
   }
 
-  int child(char c) {
-    return ch[c - 'a'];
-  }
-
-  void set_child(char c, int x) {
-    ch[c - 'a'] = x;
-  }
-
+  int child(char c) { return ch[c - 'a']; }
+  void set_child(char c, int x) { ch[c - 'a'] = x; }
   void update_bp(int p) {
     if(p >= bp.first) {
       bp.second = bp.first;
@@ -41,11 +35,28 @@ class PalTree {
 private:
   std::string str;
   std::vector<Node> nodes;
-  std::vector<int> prefpal;
+  std::vector<int> ppal;
   const static int ODD = 0, EVEN = 1;
   int lpsuf;
   int I, J;
 
+  int new_node() {
+    nodes.emplace_back();
+    return int(nodes.size()) - 1;
+  }
+  void add_char(char c) {
+    str.push_back(c);
+    ppal.push_back(0);
+    ++J;
+  }
+  void del_char() {
+    ++I;
+  }
+  char S(int x) {
+    if(x < I || x > J) return '#';
+    return str[x];
+  }
+  int& prefpal(int x) { return ppal[x]; }
   int& len(int x) { return nodes[x].len; }
   int& slink(int x) { return nodes[x].slink; }
   int& inSL(int x) { return nodes[x].inSL; }
@@ -67,35 +78,34 @@ public:
   }
 
   void push_back(char c) {
-    str.push_back(c);
-    prefpal.push_back(0);
-    ++J;
+    add_char(c);
 
-    while(lpsuf != ODD && str[J - len(lpsuf) - 1] != c)
+    while(S(J - len(lpsuf) - 1) != c)
       lpsuf = slink(lpsuf);
 
     if(!child(lpsuf, c)) {
-      int new_node = nodes.size();
-      nodes.emplace_back();
-      set_child(lpsuf, c, new_node);
-      len(new_node) = len(lpsuf) + 2;
+      int nnode = new_node();
+      set_child(lpsuf, c, nnode);
+      len(nnode) = len(lpsuf) + 2;
       
-      if(lpsuf == ODD) slink(new_node) = EVEN;
+      if(lpsuf == ODD) slink(nnode) = EVEN;
       else {
-        slink(new_node) = nodes[lpsuf].slink;
-        while(slink(new_node) != ODD && str[J - len(slink(new_node)) - 1] != c)
-          slink(new_node) = slink(slink(new_node));
-        slink(new_node) = child(slink(new_node), c);
+        slink(nnode) = nodes[lpsuf].slink;
+        while(S(J - len(slink(nnode)) - 1) != c)
+          slink(nnode) = slink(slink(nnode));
+        slink(nnode) = child(slink(nnode), c);
       }
-      ++inSL(slink(new_node));
+      ++inSL(slink(nnode));
     }
 
     int y = J - len(lpsuf) + 1;
     update_bp(lpsuf, y);
-    prefpal[y] = lpsuf;
+    prefpal(y) = lpsuf;
   }
 
   void pop_front() {
+    del_char();
+
 
 
   }
