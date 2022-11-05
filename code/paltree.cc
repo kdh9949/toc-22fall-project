@@ -7,10 +7,9 @@
 struct Node {
   int len;
   int slink;
-  char pchar;
   int inSL;
   std::pair<int, int> bp;
-  char ch[26];
+  char ch[26], pchar;
 
   Node() {
     memset(ch, 0, sizeof(ch));
@@ -46,7 +45,7 @@ private:
   }
   void add_char(char c) {
     str.push_back(c);
-    ppal.push_back(0);
+    ppal.push_back(ODD);
     ++J;
   }
   void del_char() {
@@ -65,6 +64,8 @@ private:
     nodes[x].set_child(c, y);
     nodes[y].pchar = c;
   }
+  char& pchar(int x) { return nodes[x].pchar; }
+  std::pair<int, int>& bp(int x) { return nodes[x].bp; }
   void update_bp(int x, int p) { nodes[x].update_bp(p); }
 
 public:
@@ -106,7 +107,19 @@ public:
   void pop_front() {
     del_char();
 
-
-
+    int lppref = prefpal(I - 1);
+    if(lppref == lpsuf)
+      lpsuf = slink(lpsuf);
+    
+    int q = slink(lppref);
+    int x = I - 1 + len(lppref) - len(q);
+    update_bp(q, x);
+    if(len(q) > len(prefpal(x)))
+      prefpal(x) = q;
+    
+    if(!inSL(lppref) && bp(lppref).second < I - 1) {
+      --inSL(q);
+      set_child(q, pchar(lppref), 0);
+    }
   }
 };
