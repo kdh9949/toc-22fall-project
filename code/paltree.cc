@@ -8,8 +8,10 @@ struct Node {
   int len;
   int slink;
   int inSL;
+  int parent;
   std::pair<int, int> bp;
-  char ch[26], pchar;
+  int ch[26];
+  char pchar;
 
   Node() {
     memset(ch, 0, sizeof(ch));
@@ -20,11 +22,11 @@ struct Node {
   int child(char c) { return ch[c - 'a']; }
   void set_child(char c, int x) { ch[c - 'a'] = x; }
   void update_bp(int p) {
-    if(p >= bp.first) {
+    if(p > bp.first) {
       bp.second = bp.first;
       bp.first = p;
     }
-    else if(p >= bp.second) {
+    else if(bp.first > p && p > bp.second) {
       bp.second = p;
     }
   }
@@ -35,7 +37,7 @@ private:
   std::string str;
   std::vector<Node> nodes;
   std::vector<int> ppal;
-  const static int ODD = 0, EVEN = 1;
+  const int ODD = 0, EVEN = 1;
   int lpsuf;
   int I, J;
 
@@ -56,12 +58,18 @@ private:
     return str[x];
   }
   int& prefpal(int x) { return ppal[x]; }
+  void update_prefpal(int x, int v) {
+    if(x <= J && len(prefpal(x)) < len(v))
+      prefpal(x) = v;
+  }
   int& len(int x) { return nodes[x].len; }
   int& slink(int x) { return nodes[x].slink; }
   int& inSL(int x) { return nodes[x].inSL; }
+  int& parent(int x) { return nodes[x].parent; }
   int child(int x, char c) { return nodes[x].child(c); }
   void set_child(int x, char c, int y) {
     nodes[x].set_child(c, y);
+    nodes[y].parent = x;
     nodes[y].pchar = c;
   }
   char& pchar(int x) { return nodes[x].pchar; }
@@ -70,12 +78,12 @@ private:
 
 public:
   PalTree() {
-    lpsuf = 0;
+    lpsuf = ODD;
     nodes.resize(2);
     I = 0; J = -1;
     len(ODD) = -1;
     len(EVEN) = 0;
-    slink(EVEN) = ODD;
+    slink(ODD) = slink(EVEN) = ODD;
   }
 
   void push_back(char c) {
@@ -98,6 +106,7 @@ public:
       }
       ++inSL(slink(nnode));
     }
+    lpsuf = child(lpsuf, c);
 
     int y = J - len(lpsuf) + 1;
     update_bp(lpsuf, y);
@@ -108,18 +117,17 @@ public:
     del_char();
 
     int lppref = prefpal(I - 1);
-    if(lppref == lpsuf)
+    if(len(lppref) == J - I + 2)
       lpsuf = slink(lpsuf);
     
     int q = slink(lppref);
     int x = I - 1 + len(lppref) - len(q);
     update_bp(q, x);
-    if(len(q) > len(prefpal(x)))
-      prefpal(x) = q;
+    update_prefpal(x, q);
     
     if(!inSL(lppref) && bp(lppref).second < I - 1) {
       --inSL(q);
-      set_child(q, pchar(lppref), 0);
+      set_child(parent(lppref), pchar(lppref), 0);
     }
   }
 };
