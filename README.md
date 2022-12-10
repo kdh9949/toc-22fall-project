@@ -1,6 +1,13 @@
 # toc-22fall-project
 Theory of Computing ('22 Fall) Project
 
+## Reference
+
+Takuya Mieno, Kiichi Watanabe, Yuto Nakashima, Shunsuke Inenaga, Hideo Bannai, Masayuki Takeda, Palindromic trees for a sliding window and its applications,
+Information Processing Letters, Volume 173, 2022
+
+Can read at [https://arxiv.org/abs/2006.02134](https://arxiv.org/abs/2006.02134)
+
 ## Build
 
 ```bash
