@@ -3,6 +3,7 @@ Theory of Computing ('22 Fall) Project
 
 8조 - 김동현, 선민준
 
+
 ## Reference
 
 Takuya Mieno, Kiichi Watanabe, Yuto Nakashima, Shunsuke Inenaga, Hideo Bannai, Masayuki Takeda, Palindromic trees for a sliding window and its applications,
@@ -10,12 +11,27 @@ Information Processing Letters, Volume 173, 2022
 
 Can read at [https://arxiv.org/abs/2006.02134](https://arxiv.org/abs/2006.02134)
 
+
+## Explanation
+
+Palindromic Tree data structure, supporting sliding windows operations.
+
+* `push_back(c)` : append character c to the right of current string
+* `pop_back()` : delete leftmost character from current string
+
+For any moment, the data structure maintains two following values.
+
+* `distinct_pal()` : number of distinct palindromes in current string
+* `mups()` : number of MUPS(Minimal Unique Palindromic Substrings, refer to Section 5.1. of the paper) in current string
+
+
 ## Build
 
 ```bash
 cd code
 g++ -o main main.cc -O2 -std=c++17
 ```
+
 
 ## Counting Number of distinct palindromes
 
@@ -65,6 +81,7 @@ abcaa     a,aa,b,c
   caaca   a,aa,aca,c,caac
   caacaa  a,aa,aca,aacaa,c,caac
 ```
+
 
 ## Counting Number of MUPS
 
